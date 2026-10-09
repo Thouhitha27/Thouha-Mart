@@ -23,15 +23,18 @@ public class ProductServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
 
-        HikariDataSource dataSource =
-                (HikariDataSource) getServletContext()
-                        .getAttribute("dataSource");
+        Object dataSourceObject =
+                getServletContext().getAttribute("dataSource");
 
-        if (dataSource == null) {
+        if (!(dataSourceObject instanceof HikariDataSource)) {
             throw new ServletException(
-                    "Database connection is not initialized."
+                    "Database connection is not initialized. "
+                            + "Check DatabaseListener.java."
             );
         }
+
+        HikariDataSource dataSource =
+                (HikariDataSource) dataSourceObject;
 
         ProductDAO productDAO =
                 new ProductDAOImpl(dataSource);
@@ -41,17 +44,38 @@ public class ProductServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                          HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws ServletException, IOException {
 
-        List<Product> products =
-                productService.getActiveProducts();
+        try {
 
-        request.setAttribute("products", products);
+            // Read the optional search keyword.
+            String search = request.getParameter("search");
 
-        request.getRequestDispatcher(
-                "/WEB-INF/views/products.jsp"
-        ).forward(request, response);
+            // Load active products.
+            List<Product> products =
+                    productService.getActiveProducts();
+
+            // Pass products and search information to the JSP.
+            request.setAttribute("products", products);
+            request.setAttribute("search", search);
+
+            request.getRequestDispatcher(
+                    "/WEB-INF/views/products.jsp"
+            ).forward(request, response);
+
+        } catch (Exception e) {
+
+            log("Unable to load product listing.", e);
+
+            if (!response.isCommitted()) {
+                response.sendError(
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "Unable to load products. Please try again later."
+                );
+            }
+        }
     }
 }

@@ -38,17 +38,23 @@ public class AuthServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                           HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws ServletException, IOException {
 
         String action = request.getParameter("action");
 
         if ("register".equalsIgnoreCase(action)) {
+
             handleRegister(request, response);
+
         } else if ("login".equalsIgnoreCase(action)) {
+
             handleLogin(request, response);
+
         } else {
+
             response.sendError(
                     HttpServletResponse.SC_BAD_REQUEST,
                     "Invalid authentication action."
@@ -56,9 +62,10 @@ public class AuthServlet extends HttpServlet {
         }
     }
 
-    private void handleRegister(HttpServletRequest request,
-                                HttpServletResponse response)
-            throws IOException {
+    private void handleRegister(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
 
         String name = request.getParameter("name");
         String email = request.getParameter("email");
@@ -73,19 +80,25 @@ public class AuthServlet extends HttpServlet {
         );
 
         if (registered) {
+
             response.sendRedirect(
-                    request.getContextPath() + "/login?registered=true"
+                    request.getContextPath()
+                            + "/login?registered=true"
             );
+
         } else {
+
             response.sendRedirect(
-                    request.getContextPath() + "/register?error=true"
+                    request.getContextPath()
+                            + "/register?error=true"
             );
         }
     }
 
-    private void handleLogin(HttpServletRequest request,
-                             HttpServletResponse response)
-            throws IOException {
+    private void handleLogin(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
 
         String email = request.getParameter("email");
         String password = request.getParameter("password");
@@ -93,13 +106,25 @@ public class AuthServlet extends HttpServlet {
         User user = authService.login(email, password);
 
         if (user == null) {
+
             response.sendRedirect(
-                    request.getContextPath() +"/login?error=true"
+                    request.getContextPath()
+                            + "/login?error=true"
             );
+
             return;
         }
 
-        HttpSession session = request.getSession();
+        // Prevent session fixation after successful authentication.
+        HttpSession existingSession = request.getSession(false);
+
+        if (existingSession != null) {
+            existingSession.invalidate();
+        }
+
+        HttpSession session = request.getSession(true);
+
+        // Store authenticated user details in the session.
         session.setAttribute("loggedInUser", user);
         session.setAttribute("userId", user.getId());
         session.setAttribute("userRole", user.getRole());
@@ -119,10 +144,18 @@ public class AuthServlet extends HttpServlet {
                     request.getContextPath() + "/seller/dashboard"
             );
 
-        } else {
+        } else if ("BUYER".equalsIgnoreCase(role)) {
 
             response.sendRedirect(
                     request.getContextPath() + "/buyer/home"
+            );
+
+        } else {
+
+            session.invalidate();
+
+            response.sendRedirect(
+                    request.getContextPath() + "/login?error=true"
             );
         }
     }

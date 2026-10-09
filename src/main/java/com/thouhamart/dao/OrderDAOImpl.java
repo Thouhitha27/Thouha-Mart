@@ -39,10 +39,8 @@ public class OrderDAOImpl implements OrderDAO {
                        p.price,
                        p.stock
                 FROM cart_items ci
-                JOIN cart c
-                  ON ci.cart_id = c.id
-                JOIN products p
-                  ON ci.product_id = p.id
+                JOIN cart c ON ci.cart_id = c.id
+                JOIN products p ON ci.product_id = p.id
                 WHERE ci.id IN (%s)
                   AND c.buyer_id = ?
                 FOR UPDATE
@@ -79,7 +77,7 @@ public class OrderDAOImpl implements OrderDAO {
             try {
                 int orderId;
 
-                // 1. Create order
+                // 1. Create the order
                 try (PreparedStatement statement =
                              connection.prepareStatement(
                                      orderSql,
@@ -102,13 +100,17 @@ public class OrderDAOImpl implements OrderDAO {
                     }
                 }
 
-                // 2. Read cart items and lock the rows
+                // 2. Lock and validate the selected cart items
                 try (PreparedStatement statement =
                              connection.prepareStatement(cartItemsSql)) {
 
                     int parameterIndex = 1;
 
                     for (Integer cartItemId : cartItemIds) {
+                        if (cartItemId == null || cartItemId <= 0) {
+                            throw new SQLException("Invalid cart item ID.");
+                        }
+
                         statement.setInt(parameterIndex++, cartItemId);
                     }
 
@@ -124,11 +126,16 @@ public class OrderDAOImpl implements OrderDAO {
                             int productId = resultSet.getInt("product_id");
                             int quantity = resultSet.getInt("quantity");
                             int sellerId = resultSet.getInt("seller_id");
-                            BigDecimal price = resultSet.getBigDecimal("price");
+                            BigDecimal price =
+                                    resultSet.getBigDecimal("price");
                             int stock = resultSet.getInt("stock");
 
                             if (quantity <= 0) {
                                 throw new SQLException("Invalid cart quantity.");
+                            }
+
+                            if (price == null || price.signum() < 0) {
+                                throw new SQLException("Invalid product price.");
                             }
 
                             if (stock < quantity) {
@@ -150,7 +157,7 @@ public class OrderDAOImpl implements OrderDAO {
                                 orderItemStatement.executeUpdate();
                             }
 
-                            // 4. Reduce product stock
+                            // 4. Reduce product stock safely
                             try (PreparedStatement stockStatement =
                                          connection.prepareStatement(stockSql)) {
 
@@ -158,7 +165,8 @@ public class OrderDAOImpl implements OrderDAO {
                                 stockStatement.setInt(2, productId);
                                 stockStatement.setInt(3, quantity);
 
-                                int updatedRows = stockStatement.executeUpdate();
+                                int updatedRows =
+                                        stockStatement.executeUpdate();
 
                                 if (updatedRows != 1) {
                                     throw new SQLException(
@@ -167,13 +175,20 @@ public class OrderDAOImpl implements OrderDAO {
                                 }
                             }
 
-                            // 5. Remove item from cart
+                            // 5. Remove purchased cart item
                             try (PreparedStatement deleteStatement =
                                          connection.prepareStatement(
                                                  deleteCartItemSql)) {
 
                                 deleteStatement.setInt(1, cartItemId);
-                                deleteStatement.executeUpdate();
+
+                                int deletedRows =
+                                        deleteStatement.executeUpdate();
+
+                                if (deletedRows != 1) {
+                                    throw new SQLException(
+                                            "Unable to remove purchased cart item.");
+                                }
                             }
 
                             processedItems++;
@@ -187,20 +202,15 @@ public class OrderDAOImpl implements OrderDAO {
                 }
 
                 connection.commit();
-
                 return orderId;
 
             } catch (Exception exception) {
-
                 connection.rollback();
-
                 throw exception;
             }
 
         } catch (Exception exception) {
-            throw new RuntimeException(
-                    "Error creating order",
-                    exception);
+            throw new RuntimeException("Error creating order", exception);
         }
     }
 
@@ -210,14 +220,9 @@ public class OrderDAOImpl implements OrderDAO {
         List<Order> orders = new ArrayList<>();
 
         String sql = """
-                SELECT id,
-                       buyer_id,
-                       total_amount,
-                       status,
-                       shipping_address,
-                       payment_method,
-                       created_at,
-                       updated_at
+                SELECT id, buyer_id, total_amount, status,
+                       shipping_address, payment_method,
+                       created_at, updated_at
                 FROM orders
                 WHERE buyer_id = ?
                 ORDER BY created_at DESC
@@ -229,7 +234,6 @@ public class OrderDAOImpl implements OrderDAO {
             statement.setInt(1, buyerId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
-
                 while (resultSet.next()) {
                     orders.add(mapOrder(resultSet));
                 }
@@ -237,8 +241,7 @@ public class OrderDAOImpl implements OrderDAO {
 
         } catch (SQLException exception) {
             throw new RuntimeException(
-                    "Error fetching buyer orders",
-                    exception);
+                    "Error fetching buyer orders", exception);
         }
 
         return orders;
@@ -248,14 +251,9 @@ public class OrderDAOImpl implements OrderDAO {
     public Order findById(int orderId, int buyerId) {
 
         String sql = """
-                SELECT id,
-                       buyer_id,
-                       total_amount,
-                       status,
-                       shipping_address,
-                       payment_method,
-                       created_at,
-                       updated_at
+                SELECT id, buyer_id, total_amount, status,
+                       shipping_address, payment_method,
+                       created_at, updated_at
                 FROM orders
                 WHERE id = ?
                   AND buyer_id = ?
@@ -268,19 +266,46 @@ public class OrderDAOImpl implements OrderDAO {
             statement.setInt(2, buyerId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
-
                 if (resultSet.next()) {
                     return mapOrder(resultSet);
                 }
             }
 
         } catch (SQLException exception) {
-            throw new RuntimeException(
-                    "Error fetching order",
-                    exception);
+            throw new RuntimeException("Error fetching order", exception);
         }
 
         return null;
+    }
+
+    // Admin: retrieve all customer orders
+    @Override
+    public List<Order> findAllOrders() {
+
+        List<Order> orders = new ArrayList<>();
+
+        String sql = """
+                SELECT id, buyer_id, total_amount, status,
+                       shipping_address, payment_method,
+                       created_at, updated_at
+                FROM orders
+                ORDER BY created_at DESC
+                """;
+
+        try (Connection connection = DBUtil.getConnection(dataSource);
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                orders.add(mapOrder(resultSet));
+            }
+
+        } catch (SQLException exception) {
+            throw new RuntimeException(
+                    "Error fetching all orders", exception);
+        }
+
+        return orders;
     }
 
     private Order mapOrder(ResultSet resultSet) throws SQLException {

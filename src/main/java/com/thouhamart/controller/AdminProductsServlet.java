@@ -16,8 +16,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/buyer/home")
-public class BuyerHomeServlet extends HttpServlet {
+@WebServlet("/admin/products")
+public class AdminProductsServlet extends HttpServlet {
 
     private ProductService productService;
 
@@ -29,79 +29,65 @@ public class BuyerHomeServlet extends HttpServlet {
 
         if (!(dataSourceObject instanceof HikariDataSource)) {
             throw new ServletException(
-                    "Database connection not found. "
-                            + "Check DatabaseListener.java."
+                    "Database connection is not initialized."
             );
         }
 
         HikariDataSource dataSource =
                 (HikariDataSource) dataSourceObject;
 
-        ProductDAO productDAO =
-                new ProductDAOImpl(dataSource);
-
-        productService =
-                new ProductService(productDAO);
+        ProductDAO productDAO = new ProductDAOImpl(dataSource);
+        productService = new ProductService(productDAO);
     }
 
     @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
+            throws ServletException, IOException {
 
-        // Check whether the user is logged in.
         HttpSession session = request.getSession(false);
 
-        if (session == null
-                || session.getAttribute("userId") == null) {
+        if (session == null ||
+                session.getAttribute("userId") == null) {
 
             response.sendRedirect(
                     request.getContextPath() + "/login"
             );
-
             return;
         }
 
-        // Allow only buyers to access the buyer homepage.
-        String role =
-                (String) session.getAttribute("userRole");
+        String role = (String) session.getAttribute("userRole");
 
-        if (!"BUYER".equalsIgnoreCase(role)) {
-
+        if (!"ADMIN".equalsIgnoreCase(role)) {
             response.sendError(
                     HttpServletResponse.SC_FORBIDDEN,
-                    "Only buyers can access the buyer homepage."
+                    "Access denied. Admin permission required."
             );
-
             return;
         }
 
-        // Load active products from the database.
         try {
-
             List<Product> products =
                     productService.getActiveProducts();
 
             request.setAttribute("products", products);
+            request.setAttribute("adminName",
+                    session.getAttribute("userName"));
 
             request.getRequestDispatcher(
-                    "/WEB-INF/views/buyer-home.jsp"
+                    "/WEB-INF/views/admin/products.jsp"
             ).forward(request, response);
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
 
-            log(
-                    "Unable to load products for buyer home page.",
-                    e
+            getServletContext().log(
+                    "Unable to load admin products.", e
             );
 
-            if (!response.isCommitted()) {
-                response.sendError(
-                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Unable to load products. Please try again later."
-                );
-            }
+            response.sendError(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Unable to load products. Please try again."
+            );
         }
     }
 }

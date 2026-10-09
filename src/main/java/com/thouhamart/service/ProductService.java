@@ -17,14 +17,30 @@ public class ProductService {
     public List<Product> getActiveProducts() {
         return productDAO.findActiveProducts();
     }
-    public List<Product> getProductsBySeller(int sellerId) {
 
-    if (sellerId <= 0) {
-        return List.of();
+    public List<Product> searchActiveProducts(String keyword) {
+
+        if (keyword == null || keyword.isBlank()) {
+            return getActiveProducts();
+        }
+
+        String cleanedKeyword = keyword.trim();
+
+        if (cleanedKeyword.length() > 100) {
+            cleanedKeyword = cleanedKeyword.substring(0, 100);
+        }
+
+        return productDAO.searchActiveProducts(cleanedKeyword);
     }
 
-    return productDAO.findProductsBySeller(sellerId);
-}
+    public List<Product> getProductsBySeller(int sellerId) {
+
+        if (sellerId <= 0) {
+            return List.of();
+        }
+
+        return productDAO.findProductsBySeller(sellerId);
+    }
 
     public Product getProductById(int id) {
 
@@ -35,19 +51,17 @@ public class ProductService {
         return productDAO.findById(id);
     }
 
-    public boolean addProduct(int sellerId,
-                              int categoryId,
-                              String name,
-                              String description,
-                              BigDecimal price,
-                              int stock,
-                              String imageUrl) {
+    public boolean addProduct(
+            int sellerId,
+            int categoryId,
+            String name,
+            String description,
+            BigDecimal price,
+            int stock,
+            String imageUrl
+    ) {
 
-        if (sellerId <= 0) {
-            return false;
-        }
-
-        if (categoryId <= 0) {
+        if (sellerId <= 0 || categoryId <= 0) {
             return false;
         }
 
@@ -55,7 +69,12 @@ public class ProductService {
             return false;
         }
 
-        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+        if (name.trim().length() > 150) {
+            return false;
+        }
+
+        if (price == null ||
+                price.compareTo(BigDecimal.ZERO) <= 0) {
             return false;
         }
 

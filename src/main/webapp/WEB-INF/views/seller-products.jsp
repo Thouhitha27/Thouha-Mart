@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Products - THOUHA MART</title>
+    <title>My Products | THOUHA MART</title>
 
     <style>
         * {
@@ -28,7 +28,6 @@
         }
 
         /* SIDEBAR */
-
         .sidebar {
             width: 250px;
             background: #ffffff;
@@ -65,6 +64,7 @@
             border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
+            transition: 0.2s;
         }
 
         .nav-link:hover {
@@ -91,7 +91,6 @@
         }
 
         /* MAIN */
-
         .main {
             margin-left: 250px;
             width: calc(100% - 250px);
@@ -125,14 +124,14 @@
             border-radius: 9px;
             font-size: 14px;
             font-weight: 700;
+            transition: 0.2s;
         }
 
         .add-btn:hover {
             background: #5730d0;
         }
 
-        /* MESSAGE */
-
+        /* SUCCESS MESSAGE */
         .success {
             background: #ecfdf5;
             color: #047857;
@@ -144,7 +143,6 @@
         }
 
         /* PRODUCTS */
-
         .products-card {
             background: #ffffff;
             border-radius: 14px;
@@ -169,7 +167,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 850px;
+            min-width: 800px;
         }
 
         th {
@@ -189,7 +187,7 @@
             vertical-align: middle;
         }
 
-        tr:hover td {
+        tbody tr:hover td {
             background: #fafafa;
         }
 
@@ -199,20 +197,21 @@
             gap: 12px;
         }
 
-        .product-image {
-            width: 55px;
-            height: 55px;
-            border-radius: 9px;
-            object-fit: cover;
-            border: 1px solid #e5e7eb;
-            background: #f3f4f6;
-        }
-
+        .product-image,
         .no-image {
             width: 55px;
             height: 55px;
             border-radius: 9px;
+            flex-shrink: 0;
+            border: 1px solid #e5e7eb;
             background: #f3f4f6;
+        }
+
+        .product-image {
+            object-fit: cover;
+        }
+
+        .no-image {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -224,12 +223,14 @@
         .product-name {
             font-weight: 700;
             color: #111827;
+            overflow-wrap: anywhere;
         }
 
         .product-description {
             color: #9ca3af;
             font-size: 12px;
             margin-top: 4px;
+            overflow-wrap: anywhere;
         }
 
         .price {
@@ -272,7 +273,6 @@
         }
 
         /* EMPTY STATE */
-
         .empty {
             text-align: center;
             padding: 70px 20px;
@@ -295,9 +295,7 @@
         }
 
         /* RESPONSIVE */
-
         @media (max-width: 800px) {
-
             .sidebar {
                 width: 210px;
             }
@@ -315,9 +313,8 @@
         }
 
         @media (max-width: 600px) {
-
             .sidebar {
-                position: static;
+                position: relative;
                 width: 100%;
                 min-height: auto;
             }
@@ -349,16 +346,11 @@
 <div class="layout">
 
     <!-- SIDEBAR -->
-
     <aside class="sidebar">
 
-        <div class="brand">
-            THOUHA MART
-        </div>
+        <div class="brand">THOUHA MART</div>
 
-        <div class="menu-title">
-            Seller Menu
-        </div>
+        <div class="menu-title">Seller Menu</div>
 
         <a class="nav-link"
            href="${pageContext.request.contextPath}/seller/dashboard">
@@ -375,11 +367,13 @@
             My Products
         </a>
 
-        <a class="nav-link" href="#">
+        <a class="nav-link"
+           href="${pageContext.request.contextPath}/seller/orders">
             Orders
         </a>
 
-        <a class="nav-link" href="#">
+        <a class="nav-link"
+           href="${pageContext.request.contextPath}/seller/sales">
             Sales
         </a>
 
@@ -390,9 +384,7 @@
 
     </aside>
 
-
     <!-- MAIN CONTENT -->
-
     <main class="main">
 
         <div class="topbar">
@@ -409,18 +401,22 @@
 
         </div>
 
-
         <!-- SUCCESS MESSAGE -->
-
         <c:if test="${param.added == 'true'}">
             <div class="success">
                 Product added successfully.
             </div>
         </c:if>
 
+        <!-- ERROR MESSAGE -->
+        <c:if test="${not empty error}">
+            <div class="success"
+                 style="background:#fef2f2;color:#b91c1c;border-color:#fecaca;">
+                <c:out value="${error}"/>
+            </div>
+        </c:if>
 
-        <!-- PRODUCTS -->
-
+        <!-- PRODUCTS CARD -->
         <div class="products-card">
 
             <div class="card-header">
@@ -441,28 +437,27 @@
                                 <th>Price</th>
                                 <th>Stock</th>
                                 <th>Status</th>
-                                <th>Category</th>
+                                <th>Category ID</th>
                             </tr>
                             </thead>
 
                             <tbody>
 
-                            <c:forEach var="product"
-                                       items="${products}">
+                            <c:forEach var="product" items="${products}">
 
                                 <tr>
 
                                     <td>
-
                                         <div class="product-info">
 
                                             <c:choose>
 
                                                 <c:when test="${not empty product.imageUrl}">
                                                     <img
-                                                            class="product-image"
-                                                            src="${product.imageUrl}"
-                                                            alt="${product.name}">
+                                                        class="product-image"
+                                                        src="<c:out value='${product.imageUrl}'/>"
+                                                        alt="<c:out value='${product.name}'/>"
+                                                        onerror="this.style.display='none';">
                                                 </c:when>
 
                                                 <c:otherwise>
@@ -474,30 +469,25 @@
                                             </c:choose>
 
                                             <div>
-
                                                 <div class="product-name">
-                                                    ${product.name}
+                                                    <c:out value="${product.name}"/>
                                                 </div>
 
                                                 <c:if test="${not empty product.description}">
                                                     <div class="product-description">
-                                                        ${product.description}
+                                                        <c:out value="${product.description}"/>
                                                     </div>
                                                 </c:if>
-
                                             </div>
 
                                         </div>
-
                                     </td>
-
 
                                     <td>
                                         <span class="price">
-                                            ₹${product.price}
+                                            ₹<c:out value="${product.price}"/>
                                         </span>
                                     </td>
-
 
                                     <td>
 
@@ -511,20 +501,19 @@
 
                                             <c:when test="${product.stock <= 5}">
                                                 <span class="stock stock-low">
-                                                    ${product.stock} left
+                                                    <c:out value="${product.stock}"/> left
                                                 </span>
                                             </c:when>
 
                                             <c:otherwise>
                                                 <span class="stock stock-good">
-                                                    ${product.stock}
+                                                    <c:out value="${product.stock}"/>
                                                 </span>
                                             </c:otherwise>
 
                                         </c:choose>
 
                                     </td>
-
 
                                     <td>
 
@@ -538,7 +527,7 @@
 
                                             <c:otherwise>
                                                 <span class="status status-inactive">
-                                                    ${product.status}
+                                                    <c:out value="${product.status}"/>
                                                 </span>
                                             </c:otherwise>
 
@@ -546,9 +535,8 @@
 
                                     </td>
 
-
                                     <td>
-                                        ${product.categoryId}
+                                        <c:out value="${product.categoryId}"/>
                                     </td>
 
                                 </tr>
@@ -563,14 +551,11 @@
 
                 </c:when>
 
-
                 <c:otherwise>
 
                     <div class="empty">
 
-                        <div class="empty-icon">
-                            📦
-                        </div>
+                        <div class="empty-icon">📦</div>
 
                         <h3>No Products Yet</h3>
 

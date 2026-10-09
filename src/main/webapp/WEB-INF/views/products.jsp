@@ -1,95 +1,76 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Products | THOUHA MART</title>
+    <title>All Products | THOUHA MART</title>
 
     <style>
-
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background: #f8f8fb;
-            color: #222;
+            background: #f7f8fc;
+            color: #202124;
         }
 
-        /* HEADER */
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-        .header {
+        .navbar {
             background: #ffffff;
-            border-bottom: 1px solid #eeeeee;
-            padding: 15px 6%;
+            padding: 18px 6%;
             display: flex;
             align-items: center;
-            gap: 30px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #eeeeee;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
         }
 
         .logo {
+            color: #6c35de;
             font-size: 25px;
             font-weight: 800;
-            color: #7b2cbf;
+            letter-spacing: -0.7px;
             white-space: nowrap;
-        }
-
-        .search-box {
-            flex: 1;
-            max-width: 600px;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 13px 18px;
-            border: 1px solid #dddddd;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            background: #f8f8f8;
-        }
-
-        .search-box input:focus {
-            border-color: #7b2cbf;
-            background: #ffffff;
         }
 
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 22px;
-            margin-left: auto;
+            gap: 25px;
+            flex-wrap: wrap;
         }
 
         .nav-links a {
-            text-decoration: none;
-            color: #333;
+            color: #555;
             font-size: 14px;
             font-weight: 600;
+            transition: color 0.2s;
         }
 
-        .nav-links a:hover {
-            color: #7b2cbf;
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #6c35de;
         }
 
-        /* PAGE */
-
-        .container {
+        .page-container {
             width: 88%;
-            max-width: 1300px;
-            margin: 35px auto;
+            max-width: 1250px;
+            margin: 38px auto;
         }
 
         .page-heading {
@@ -97,68 +78,111 @@
         }
 
         .page-heading h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #202124;
         }
 
         .page-heading p {
             color: #777;
-            font-size: 14px;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* FILTER BAR */
-
-        .filter-bar {
-            background: white;
-            border: 1px solid #eeeeee;
-            border-radius: 10px;
-            padding: 15px 20px;
+        .search-panel {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 14px;
             margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            box-shadow: 0 4px 18px rgba(30, 20, 60, 0.04);
         }
 
-        .filter-title {
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px 16px;
+            border: 1px solid #dedee8;
+            border-radius: 9px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search-form input:focus {
+            border-color: #6c35de;
+            box-shadow: 0 0 0 3px rgba(108, 53, 222, 0.10);
+        }
+
+        .search-button {
+            border: none;
+            border-radius: 9px;
+            background: #6c35de;
+            color: white;
+            padding: 0 25px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background: #5525bd;
+        }
+
+        .clear-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: #6c35de;
+            font-size: 13px;
             font-weight: 600;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 28px 0 20px;
+        }
+
+        .results-header h2 {
+            font-size: 20px;
+        }
+
+        .results-count {
+            color: #777;
             font-size: 14px;
         }
-
-        .sort-select {
-            padding: 9px 13px;
-            border: 1px solid #dddddd;
-            border-radius: 6px;
-            background: white;
-        }
-
-        /* PRODUCT GRID */
 
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 22px;
         }
 
         .product-card {
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            border: 1px solid #eeeeee;
-            transition: 0.2s ease;
+            border: 1px solid #eeeeF4;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .product-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(40, 25, 80, 0.09);
         }
 
         .product-image {
-            width: 100%;
-            height: 230px;
-            background: #f4f4f6;
+            height: 210px;
+            background: #f0ebff;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             overflow: hidden;
         }
 
@@ -168,318 +192,420 @@
             object-fit: cover;
         }
 
-        .no-image {
-            font-size: 55px;
-            color: #cccccc;
+        .product-placeholder {
+            font-size: 58px;
         }
 
-        .product-info {
-            padding: 17px;
+        .product-details {
+            padding: 18px;
         }
 
         .product-name {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
+            line-height: 1.5;
             margin-bottom: 8px;
-            line-height: 1.4;
+            overflow-wrap: anywhere;
         }
 
         .product-description {
             font-size: 13px;
+            line-height: 1.6;
             color: #777;
-            min-height: 38px;
+            margin-bottom: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .product-price {
+            color: #6c35de;
+            font-size: 22px;
+            font-weight: 800;
             margin-bottom: 12px;
         }
 
-        .price {
-            font-size: 20px;
-            font-weight: 800;
-            color: #222;
-            margin-bottom: 8px;
+        .stock-status {
+            color: #16834a;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 17px;
         }
 
-        .stock {
-            font-size: 12px;
-            color: #238636;
-            margin-bottom: 15px;
-        }
-
-        .out-stock {
+        .out-of-stock {
             color: #d93025;
         }
 
-        .add-cart {
+        .cart-button {
             width: 100%;
+            padding: 12px;
             border: none;
-            padding: 11px;
-            border-radius: 7px;
-            background: #7b2cbf;
+            border-radius: 8px;
+            background: #6c35de;
             color: white;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
         }
 
-        .add-cart:hover {
-            background: #6923a5;
+        .cart-button:hover {
+            background: #5525bd;
         }
 
-        /* EMPTY */
+        .cart-button:disabled {
+            background: #c7c7d0;
+            cursor: not-allowed;
+        }
 
-        .empty-products {
-            background: white;
-            border-radius: 12px;
-            padding: 70px 20px;
+        .empty-state {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 60px 20px;
             text-align: center;
-            border: 1px solid #eeeeee;
+            grid-column: 1 / -1;
         }
 
-        .empty-products h2 {
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
             margin-bottom: 10px;
+            font-size: 21px;
         }
 
-        .empty-products p {
+        .empty-state p {
             color: #777;
+            line-height: 1.6;
         }
 
-        /* RESPONSIVE */
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #6c35de;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #888;
+            font-size: 13px;
+            margin-top: 50px;
+            border-top: 1px solid #eeeeee;
+            background: #ffffff;
+        }
 
         @media (max-width: 1000px) {
-
             .product-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                padding: 16px 5%;
             }
 
             .nav-links {
-                gap: 12px;
-            }
-        }
-
-        @media (max-width: 750px) {
-
-            .header {
-                flex-wrap: wrap;
-                gap: 15px;
+                gap: 16px;
             }
 
-            .search-box {
-                order: 3;
-                flex-basis: 100%;
+            .page-container {
+                width: 92%;
+                margin: 28px auto;
+            }
+
+            .page-heading h1 {
+                font-size: 25px;
             }
 
             .product-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 13px;
             }
 
-            .container {
-                width: 94%;
+            .product-image {
+                height: 155px;
+            }
+
+            .product-details {
+                padding: 12px;
+            }
+
+            .product-price {
+                font-size: 19px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-button {
+                padding: 14px;
             }
         }
 
-        @media (max-width: 480px) {
-
+        @media (max-width: 380px) {
             .product-grid {
                 grid-template-columns: 1fr;
             }
-
-            .nav-links {
-                margin-left: 0;
-            }
         }
-
     </style>
 </head>
 
 <body>
 
-<header class="header">
+<header class="navbar">
 
-    <div class="logo">
+    <a class="logo"
+       href="${pageContext.request.contextPath}/buyer/home">
         THOUHA MART
-    </div>
-
-    <div class="search-box">
-        <input
-                type="text"
-                placeholder="Search products..."
-                id="searchInput">
-    </div>
+    </a>
 
     <nav class="nav-links">
         <a href="${pageContext.request.contextPath}/buyer/home">
             Home
         </a>
 
-        <a href="${pageContext.request.contextPath}/products">
+        <a class="active"
+           href="${pageContext.request.contextPath}/products">
             Products
         </a>
 
-        <a href="#">
+        <a href="${pageContext.request.contextPath}/cart">
             Cart
         </a>
 
-        <a href="#">
+        <a href="${pageContext.request.contextPath}/orders">
             Orders
         </a>
     </nav>
 
 </header>
 
+<main class="page-container">
 
-<main class="container">
-
-    <div class="page-heading">
-
-        <h1>All Products</h1>
-
+    <section class="page-heading">
+        <h1>Discover Products</h1>
         <p>
-            Discover products from sellers on THOUHA MART
+            Explore products from sellers across THOUHA MART.
+            Find what you need at great prices.
         </p>
+    </section>
 
-    </div>
+    <section class="search-panel">
 
+        <form class="search-form"
+              action="${pageContext.request.contextPath}/products"
+              method="get">
 
-    <div class="filter-bar">
+            <input
+                type="search"
+                name="search"
+                placeholder="Search products by name or description..."
+                value="<c:out value='${search}'/>"
+                maxlength="100"
+                aria-label="Search products">
 
-        <div class="filter-title">
-            <c:out value="${products.size()}" />
-            products available
+            <button class="search-button" type="submit">
+                Search Products
+            </button>
+
+        </form>
+
+        <c:if test="${not empty search}">
+            <a class="clear-link"
+               href="${pageContext.request.contextPath}/products">
+                Clear search and view all products
+            </a>
+        </c:if>
+
+    </section>
+
+    <section>
+
+        <div class="results-header">
+
+            <h2>
+                <c:choose>
+                    <c:when test="${not empty search}">
+                        Search Results
+                    </c:when>
+                    <c:otherwise>
+                        All Products
+                    </c:otherwise>
+                </c:choose>
+            </h2>
+
+            <span class="results-count">
+                <c:choose>
+                    <c:when test="${empty products}">
+                        No products found
+                    </c:when>
+                    <c:otherwise>
+                        <c:out value="${products.size()}"/> products available
+                    </c:otherwise>
+                </c:choose>
+            </span>
+
         </div>
 
-        <select class="sort-select">
-            <option>Sort: Latest</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-        </select>
+        <div class="product-grid">
 
-    </div>
+            <c:choose>
 
+                <c:when test="${not empty products}">
 
-    <c:choose>
+                    <c:forEach var="product" items="${products}">
 
-        <c:when test="${not empty products}">
+                        <article class="product-card">
 
-            <div class="product-grid">
-
-                <c:forEach var="product" items="${products}">
-
-                    <div class="product-card">
-
-                        <div class="product-image">
-
-                            <c:choose>
-
-                                <c:when test="${not empty product.imageUrl}">
-
-                                    <img
-                                            src="${product.imageUrl}"
-                                            alt="<c:out value='${product.name}' />">
-
-                                </c:when>
-
-                                <c:otherwise>
-
-                                    <div class="no-image">
-                                        &#128230;
-                                    </div>
-
-                                </c:otherwise>
-
-                            </c:choose>
-
-                        </div>
-
-
-                        <div class="product-info">
-
-                            <div class="product-name">
-                                <c:out value="${product.name}" />
-                            </div>
-
-
-                            <div class="product-description">
+                            <div class="product-image">
 
                                 <c:choose>
 
-                                    <c:when test="${not empty product.description}">
-                                        <c:out value="${product.description}" />
+                                    <c:when test="${not empty product.imageUrl}">
+                                        <img
+                                            src="<c:out value='${product.imageUrl}'/>"
+                                            alt="<c:out value='${product.name}'/>"
+                                            loading="lazy"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+
+                                        <span class="product-placeholder"
+                                              style="display:none;">
+                                            📦
+                                        </span>
                                     </c:when>
 
                                     <c:otherwise>
-                                        Quality product from THOUHA MART
+                                        <span class="product-placeholder">
+                                            📦
+                                        </span>
                                     </c:otherwise>
 
                                 </c:choose>
 
                             </div>
 
+                            <div class="product-details">
 
-                            <div class="price">
-                                ₹ <c:out value="${product.price}" />
+                                <h3 class="product-name">
+                                    <c:out value="${product.name}"/>
+                                </h3>
+
+                                <p class="product-description">
+                                    <c:out value="${product.description}"/>
+                                </p>
+
+                                <div class="product-price">
+                                    ₹ <fmt:formatNumber
+                                            value="${product.price}"
+                                            minFractionDigits="2"
+                                            maxFractionDigits="2"/>
+                                </div>
+
+                                <c:choose>
+
+                                    <c:when test="${product.stock > 0}">
+                                        <p class="stock-status">
+                                            ✓ In Stock
+                                        </p>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <p class="stock-status out-of-stock">
+                                            Out of Stock
+                                        </p>
+                                    </c:otherwise>
+
+                                </c:choose>
+
+                                <c:choose>
+
+                                    <c:when test="${product.stock > 0}">
+                                        <form
+                                            action="${pageContext.request.contextPath}/cart"
+                                            method="post">
+
+                                            <input type="hidden"
+                                                   name="productId"
+                                                   value="<c:out value='${product.id}'/>">
+
+                                            <input type="hidden"
+                                                   name="quantity"
+                                                   value="1">
+
+                                            <button class="cart-button"
+                                                    type="submit">
+                                                Add to Cart
+                                            </button>
+
+                                        </form>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <button class="cart-button"
+                                                type="button"
+                                                disabled>
+                                            Out of Stock
+                                        </button>
+                                    </c:otherwise>
+
+                                </c:choose>
+
                             </div>
 
+                        </article>
 
+                    </c:forEach>
+
+                </c:when>
+
+                <c:otherwise>
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">🔎</div>
+
+                        <h3>
                             <c:choose>
-
-                                <c:when test="${product.stock > 0}">
-
-                                    <div class="stock">
-                                        In Stock
-                                   <form action="${pageContext.request.contextPath}/cart/add" method="post">
-    <input type="hidden" name="productId" value="${product.id}">
-    <input type="hidden" name="quantity" value="1">
-
-    <button type="submit" class="add-cart">
-        Add to Cart
-    </button>
-</form>
-
+                                <c:when test="${not empty search}">
+                                    No matching products found
                                 </c:when>
-
                                 <c:otherwise>
-
-                                    <div class="stock out-stock">
-                                        Out of Stock
-                                    </div>
-
-                                    <button
-                                            class="add-cart"
-                                            disabled>
-                                        Out of Stock
-                                    </button>
-
+                                    No products available yet
                                 </c:otherwise>
-
                             </c:choose>
+                        </h3>
 
-                        </div>
+                        <p>
+                            Try another search term or browse all available products.
+                        </p>
+
+                        <a class="back-button"
+                           href="${pageContext.request.contextPath}/products">
+                            View All Products
+                        </a>
 
                     </div>
 
-                </c:forEach>
+                </c:otherwise>
 
-            </div>
+            </c:choose>
 
-        </c:when>
+        </div>
 
-
-        <c:otherwise>
-
-            <div class="empty-products">
-
-                <h2>No products available</h2>
-
-                <p>
-                    Products will appear here when sellers add them.
-                </p>
-
-            </div>
-
-        </c:otherwise>
-
-    </c:choose>
+    </section>
 
 </main>
+
+<footer>
+    &copy; 2026 THOUHA MART. All rights reserved.
+</footer>
 
 </body>
 </html>

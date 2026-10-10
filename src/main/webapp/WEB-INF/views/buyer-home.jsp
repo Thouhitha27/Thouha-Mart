@@ -128,10 +128,57 @@
         }
 
         .products {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 22px;
-        }
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
+}
+
+.product {
+    min-width: 0;
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid #eee;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-image {
+    width: 100%;
+    height: 220px;
+    background: #f3f0f5;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+@media (max-width: 1000px) {
+    .products {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .products {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+}
+
+@media (max-width: 420px) {
+    .products {
+        grid-template-columns: 1fr;
+    }
+}
 
         .product {
             background: white;
@@ -318,7 +365,7 @@
                     <c:choose>
                         <c:when test="${not empty product.imageUrl}">
                             <img
-                                src="<c:out value='${product.imageUrl}'/>"
+                                src="${pageContext.request.contextPath}/${product.imageUrl}"
                                 alt="<c:out value='${product.name}'/>"
                                 loading="lazy"
                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"

@@ -1,7 +1,21 @@
-target/
+# Environment and secrets
+.env
+.env.*
+!.env.example
+application.properties
+config.properties
+
+# IDE
 .idea/
 .vscode/
+
+# Java build files
+target/
 *.class
 *.log
 *.war
 *.jar
+
+# OS files
+.DS_Store
+Thumbs.db

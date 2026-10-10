@@ -1,11 +1,10 @@
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -32,13 +31,14 @@
         /* SIDEBAR */
         .sidebar {
             width: 250px;
-            background: #ffffff;
-            border-right: 1px solid #eeeeee;
+            background: #fff;
+            border-right: 1px solid #eee;
             padding: 28px 18px;
             position: fixed;
-            left: 0;
             top: 0;
             bottom: 0;
+            left: 0;
+            overflow-y: auto;
         }
 
         .brand {
@@ -91,7 +91,7 @@
             background: #fef2f2 !important;
         }
 
-        /* MAIN */
+        /* MAIN CONTENT */
         .main {
             margin-left: 250px;
             width: calc(100% - 250px);
@@ -100,9 +100,9 @@
 
         /* TOP BAR */
         .topbar {
-            background: white;
+            background: #fff;
             border-radius: 16px;
-            padding: 20px 25px;
+            padding: 22px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -117,7 +117,7 @@
 
         .topbar p {
             color: #888;
-            margin-top: 5px;
+            margin-top: 7px;
             font-size: 14px;
         }
 
@@ -133,10 +133,10 @@
 
         /* FORM CARD */
         .form-card {
-            background: white;
+            background: #fff;
             border-radius: 18px;
             padding: 32px;
-            max-width: 900px;
+            max-width: 1000px;
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
         }
 
@@ -152,7 +152,7 @@
             line-height: 1.6;
         }
 
-        /* ERROR */
+        /* ERROR AND SUCCESS */
         .error-box {
             background: #fff0f0;
             border: 1px solid #ffcaca;
@@ -161,7 +161,16 @@
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
-            font-weight: 600;
+        }
+
+        .success-box {
+            background: #ecfdf3;
+            border: 1px solid #a7f3c0;
+            color: #166534;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
         }
 
         /* FORM */
@@ -192,7 +201,7 @@
         textarea,
         select {
             width: 100%;
-            border: 1px solid #dddddd;
+            border: 1px solid #ddd;
             border-radius: 10px;
             padding: 13px 14px;
             font-size: 14px;
@@ -214,10 +223,97 @@
         }
 
         .hint {
-            color: #999;
+            color: #888;
             font-size: 12px;
-            margin-top: 6px;
-            line-height: 1.5;
+            margin-top: 7px;
+            line-height: 1.6;
+        }
+
+        /* IMAGE UPLOAD */
+        .upload-area {
+            border: 2px dashed #cfc3ff;
+            border-radius: 14px;
+            background: #faf9ff;
+            padding: 25px;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: #6c3df4;
+            background: #f5f1ff;
+        }
+
+        .upload-icon {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .upload-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .upload-description {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .choose-file-btn {
+            display: inline-block;
+            background: #6c3df4;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .choose-file-btn:hover {
+            background: #5930d5;
+        }
+
+        .file-name {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #51418a;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-container {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            width: 220px;
+            height: 220px;
+            object-fit: contain;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 8px;
+        }
+
+        .remove-image {
+            display: block;
+            margin: 10px auto 0;
+            border: none;
+            background: transparent;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
         }
 
         /* BUTTONS */
@@ -232,17 +328,18 @@
             display: inline-block;
             border: none;
             border-radius: 10px;
-            padding: 13px 22px;
+            padding: 14px 22px;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             text-decoration: none;
+            text-align: center;
             transition: 0.2s;
         }
 
         .btn-primary {
             background: #6c3df4;
-            color: white;
+            color: #fff;
         }
 
         .btn-primary:hover {
@@ -260,7 +357,7 @@
 
         /* INFO */
         .info-box {
-            max-width: 900px;
+            max-width: 1000px;
             margin-top: 20px;
             background: #f1edff;
             border: 1px solid #ddd4ff;
@@ -271,8 +368,8 @@
             line-height: 1.7;
         }
 
-        /* MOBILE */
-        @media (max-width: 800px) {
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
             .sidebar {
                 width: 210px;
             }
@@ -280,7 +377,7 @@
             .main {
                 margin-left: 210px;
                 width: calc(100% - 210px);
-                padding: 20px;
+                padding: 22px;
             }
 
             .form-grid {
@@ -307,7 +404,7 @@
             .main {
                 margin-left: 0;
                 width: 100%;
-                padding: 20px;
+                padding: 16px;
             }
 
             .topbar {
@@ -316,11 +413,14 @@
             }
 
             .form-card {
-                padding: 22px;
+                padding: 20px;
+            }
+
+            .actions .btn {
+                width: 100%;
             }
         }
     </style>
-
 </head>
 
 <body>
@@ -331,7 +431,6 @@
     <aside class="sidebar">
 
         <div class="brand">THOUHA MART</div>
-
         <div class="seller-label">Seller Panel</div>
 
         <nav class="menu">
@@ -363,10 +462,9 @@
             </a>
 
         </nav>
-
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN -->
     <main class="main">
 
         <!-- TOP BAR -->
@@ -374,7 +472,7 @@
 
             <div>
                 <h1>Add New Product</h1>
-                <p>Add a product to your THOUHA MART store.</p>
+                <p>Add your product details and upload its photo.</p>
             </div>
 
             <div class="seller-badge">
@@ -389,8 +487,8 @@
             <h2>Product Information</h2>
 
             <p class="form-description">
-                Enter your product details carefully.
-                Customers will see this information on the marketplace.
+                Enter accurate product details and select a clear product
+                image from your computer.
             </p>
 
             <!-- ERROR MESSAGE -->
@@ -400,17 +498,26 @@
                 </div>
             </c:if>
 
+            <!-- SUCCESS MESSAGE -->
+            <c:if test="${not empty success}">
+                <div class="success-box">
+                    <c:out value="${success}"/>
+                </div>
+            </c:if>
+
             <!-- FORM -->
             <form
+                id="productForm"
                 action="${pageContext.request.contextPath}/seller/products/add"
-                method="post">
+                method="post"
+                enctype="multipart/form-data">
 
                 <div class="form-grid">
 
                     <!-- PRODUCT NAME -->
                     <div class="form-group full">
 
-                        <label for="name">Product Name</label>
+                        <label for="name">Product Name *</label>
 
                         <input
                             type="text"
@@ -425,7 +532,7 @@
                     <!-- CATEGORY -->
                     <div class="form-group">
 
-                        <label for="categoryId">Category</label>
+                        <label for="categoryId">Category *</label>
 
                         <select
                             id="categoryId"
@@ -435,11 +542,9 @@
                             <option value="">Select a category</option>
 
                             <c:forEach var="category" items="${categories}">
-
                                 <option value="${category.id}">
                                     <c:out value="${category.name}"/>
                                 </option>
-
                             </c:forEach>
 
                         </select>
@@ -456,7 +561,7 @@
                     <!-- PRICE -->
                     <div class="form-group">
 
-                        <label for="price">Price (₹)</label>
+                        <label for="price">Price (₹) *</label>
 
                         <input
                             type="number"
@@ -472,7 +577,7 @@
                     <!-- STOCK -->
                     <div class="form-group">
 
-                        <label for="stock">Available Stock</label>
+                        <label for="stock">Available Stock *</label>
 
                         <input
                             type="number"
@@ -485,21 +590,65 @@
 
                     </div>
 
-                    <!-- IMAGE URL -->
-                    <div class="form-group">
+                    <!-- PRODUCT IMAGE -->
+                    <div class="form-group full">
 
-                        <label for="imageUrl">Product Image URL</label>
+                        <label for="productImage">Product Image *</label>
 
-                        <input
-                            type="url"
-                            id="imageUrl"
-                            name="imageUrl"
-                            placeholder="https://example.com/product.jpg"
-                            maxlength="1000">
+                        <div class="upload-area">
+
+                            <div class="upload-icon">📷</div>
+
+                            <div class="upload-title">
+                                Upload Your Product Photo
+                            </div>
+
+                            <div class="upload-description">
+                                Select an image from your computer.
+                                JPG, PNG or WEBP · Maximum 5 MB
+                            </div>
+
+                            <label
+                                for="productImage"
+                                class="choose-file-btn">
+                                Choose Image
+                            </label>
+
+                            <input
+                                class="file-input"
+                                type="file"
+                                id="productImage"
+                                name="productImage"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                required>
+
+                            <div
+                                class="file-name"
+                                id="fileName"
+                                aria-live="polite">
+                            </div>
+
+                            <div class="preview-container" id="previewContainer">
+
+                                <img
+                                    class="image-preview"
+                                    id="imagePreview"
+                                    alt="Selected product image preview">
+
+                                <button
+                                    type="button"
+                                    class="remove-image"
+                                    id="removeImage">
+                                    Remove Image
+                                </button>
+
+                            </div>
+
+                        </div>
 
                         <span class="hint">
-                            Enter a publicly accessible image URL.
-                            File upload is not included in this form.
+                            Choose a clear image of the product.
+                            The selected photo will be previewed before submission.
                         </span>
 
                     </div>
@@ -507,9 +656,7 @@
                     <!-- DESCRIPTION -->
                     <div class="form-group full">
 
-                        <label for="description">
-                            Product Description
-                        </label>
+                        <label for="description">Product Description</label>
 
                         <textarea
                             id="description"
@@ -547,15 +694,98 @@
 
             <strong>Seller tip:</strong>
 
-            Provide a clear product name, accurate price, available stock
-            and useful description. Good product information helps customers
-            understand what they are buying.
+            Upload a clear product image, provide an accurate price,
+            maintain the correct stock quantity and write a useful
+            description to help customers make informed decisions.
 
         </div>
 
     </main>
 
 </div>
+
+<!-- IMAGE PREVIEW AND VALIDATION -->
+<script>
+    const imageInput = document.getElementById("productImage");
+    const imagePreview = document.getElementById("imagePreview");
+    const previewContainer = document.getElementById("previewContainer");
+    const fileName = document.getElementById("fileName");
+    const removeImageButton = document.getElementById("removeImage");
+    const productForm = document.getElementById("productForm");
+
+    let previewObjectUrl = null;
+
+    imageInput.addEventListener("change", function () {
+        const file = this.files[0];
+
+        if (!file) {
+            clearImagePreview();
+            return;
+        }
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert("Please select a JPG, PNG or WEBP image.");
+            this.value = "";
+            clearImagePreview();
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Image size must be 5 MB or less.");
+            this.value = "";
+            clearImagePreview();
+            return;
+        }
+
+        if (previewObjectUrl) {
+            URL.revokeObjectURL(previewObjectUrl);
+        }
+
+        previewObjectUrl = URL.createObjectURL(file);
+
+        imagePreview.src = previewObjectUrl;
+        previewContainer.style.display = "block";
+        fileName.textContent = "Selected: " + file.name;
+    });
+
+    function clearImagePreview() {
+        if (previewObjectUrl) {
+            URL.revokeObjectURL(previewObjectUrl);
+            previewObjectUrl = null;
+        }
+
+        imagePreview.removeAttribute("src");
+        previewContainer.style.display = "none";
+        fileName.textContent = "";
+    }
+
+    removeImageButton.addEventListener("click", function () {
+        imageInput.value = "";
+        clearImagePreview();
+    });
+
+    productForm.addEventListener("submit", function (event) {
+        const file = imageInput.files[0];
+
+        if (!file) {
+            event.preventDefault();
+            alert("Please select a product image.");
+            imageInput.focus();
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            event.preventDefault();
+            alert("Image size must be 5 MB or less.");
+        }
+    });
+</script>
 
 </body>
 </html>

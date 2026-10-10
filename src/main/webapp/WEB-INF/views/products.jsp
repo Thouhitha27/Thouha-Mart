@@ -462,34 +462,30 @@
 
                     <c:forEach var="product" items="${products}">
 
-                        <article class="product-card">
 
-                            <div class="product-image">
+<div class="product-image">
+    <c:choose>
+        <c:when test="${not empty product.imageUrl}">
+            <img
+                src="${pageContext.request.contextPath}/${product.imageUrl}"
+                alt="<c:out value='${product.name}'/>"
+                loading="lazy"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
 
-                                <c:choose>
+            <span class="product-placeholder" style="display:none;">
+                📦
+            </span>
+        </c:when>
 
-                                    <c:when test="${not empty product.imageUrl}">
-                                        <img
-                                            src="<c:out value='${product.imageUrl}'/>"
-                                            alt="<c:out value='${product.name}'/>"
-                                            loading="lazy"
-                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <c:otherwise>
+            <span class="product-placeholder">
+                📦
+            </span>
+        </c:otherwise>
+    </c:choose>
+</div>
 
-                                        <span class="product-placeholder"
-                                              style="display:none;">
-                                            📦
-                                        </span>
-                                    </c:when>
-
-                                    <c:otherwise>
-                                        <span class="product-placeholder">
-                                            📦
-                                        </span>
-                                    </c:otherwise>
-
-                                </c:choose>
-
-                            </div>
+<div class="product-details">
 
                             <div class="product-details">
 

@@ -402,12 +402,13 @@
 
                         <td>
                             <c:choose>
-                                <c:when test="${not empty product.image}">
-                                    <img
-                                        class="product-image"
-                                        src="${pageContext.request.contextPath}/images/${product.image}"
-                                        alt="${product.name}"
-                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            
+<c:when test="${not empty product.imageUrl}">
+    <img
+        class="product-image"
+        src="${pageContext.request.contextPath}/images/${product.imageUrl}"
+        alt="${product.name}"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
 
                                     <div class="image-placeholder"
                                          style="display:none;">
